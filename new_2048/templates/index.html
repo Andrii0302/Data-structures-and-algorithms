@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2048 Game</title>
+    <h1>It's a simple 2048 game , press arrow keys to merge cells , if you reach 2048 points - you win! Good luck!</h1>
+    <h1>Press arrow keys to trigger actions</h1>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.3.1/socket.io.js"></script>
+    <script>
+        var socket = io.connect('http://' + document.domain + ':' + location.port);
+        socket.on('connect', function() {
+            console.log('Connected to server');
+        });
+        socket.on('update_matrix', function(matrix) {
+            console.log('Received updated matrix:', matrix);
+            // Update the matrix display on the webpage
+            // For example, you can update a <div> element with the new matrix values
+            document.getElementById('matrix').innerText = matrix.join('\n');
+        });
+        document.addEventListener('keydown', function(event) {
+            var key = event.key.toLowerCase();
+            if (['arrowup', 'arrowdown', 'arrowleft', 'arrowright'].includes(key)) {
+                event.preventDefault(); // Prevent default behavior (scrolling)
+                socket.emit('keypress', key.replace('arrow', '')); // Send keypress event to server
+            }
+        });
+    </script>
+</head>
+<body>
+    <h1>2048 Game</h1>
+    <pre id="matrix">{{ matrix|safe }}</pre> <!-- Display the matrix here -->
+</body>
+</html>
